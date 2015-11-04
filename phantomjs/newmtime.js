@@ -1,19 +1,25 @@
 var fs = require("fs");
-function crawl_movie(page, url) {
-    console.log("+++++crawl: "+url);
+function crawl_movie_current_playing(page, url) {
     var all = page.evaluate(function(){
             var movies_head = document.querySelectorAll("div.moviebox.clearfix a.picbox.__r_c_");
-            var movies_more = document.querySelectorAll("div#hotplayMoreDiv.moviemore.clearfix a.picbox.__r_c_");
-            var movies = movies_head.concat(movies_more);
+            var movies_more = document.querySelectorAll("div#hotplayMoreDiv a.picbox.__r_c_");
+            console.log("head: "+ movies_head.toString() + "  more: " + movies_more.toString());
+            console.log("head: "+ movies_head.length + "  more: " + movies_more.length);
             var ret = new Array();
-            for(m in movies) {
-                if(movies[m].href != null && movies[m].href != "javascript:;"){
-                    console.log("document: movie "+ movies[m].href);
-                    ret.push(movies[m].href);
+            for(m in movies_head) {
+                if(movies_head[m].href != null && movies_head[m].href != "javascript:;"){
+                    console.log("document head: movie "+ movies_head[m].href);
+                    ret.push(movies_head[m].href);
+                }
+            }
+            for(m in movies_more) {
+                if(movies_more[m].href != null && movies_more[m].href != "javascript:;"){
+                    console.log("document more: movie "+ movies_more[m].href);
+                    ret.push(movies_more[m].href);
                 }
             }
             return ret;
-            });
+    });
     console.log("begin to write to file");
     var file = fs.open("mtime.movies","a")
         for(i in all) {
@@ -21,22 +27,23 @@ function crawl_movie(page, url) {
             file.write(all[i]+"\n");
         }
     file.close();
+    phantom.exit();
 }
 
-function crawl_movie(page, url) {
+function crawl_movie_coming(page, url) {
     var all = page.evaluate(function(){
-            var info = document.querySelectorAll("a.ticket.__r_c_");
+            var info = document.querySelectorAll("dl#upcomingSlide a.img.__r_c_");
             var ret = new Array();
-            for(m in movies) {
-                if(movies[m].href != null && movies[m].href != "javascript:;"){
-                    console.log("document: movie "+ movies[m].href);
-                    ret.push(movies[m].href);
+            for(m in info) {
+                if(info[m].href != null && info[m].href != "javascript:;"){
+                    console.log("document: movie "+ info[m].href);
+                    ret.push(info[m].href);
                 }
             }
             return ret;
     });
     console.log("begin to write to file");
-    var file = fs.open("mtime.movie_info","a")
+    var file = fs.open("mtime.movie_info","a");
         for(i in all) {
             console.log("write to file:  " + all[i]);
             file.write(all[i]+"\n");
@@ -98,41 +105,36 @@ function crawl(url, callback){
 };
 
 
-function movies(){
-    var file = fs.open("mtime.urls", 'r');
-    var urls = file.read().toString()
-        //console.log(urls);
-        file.close();
-    urls = urls.split("\n")
-        urls.pop()
-        //console.log("len: " + urls.length);
-        for(i in urls) {
-            //console.log("url: "+ urls[i])
-            //crawl(urls[i])
-        }
-    crawl("http://theater.mtime.com/China_Guangdong_Province_Shenzen/",crawl_movie)
-}
-
-function movie_info()
-{
-    var file = fs.open("mtime.movies", 'r');
-    var urls = file.read().toString()
+function read_url_and_crawl(filename, callback){
+    var file = fs.open(filename, 'r');
+    var urls = file.read().toString();
     //console.log(urls);
     file.close();
-    urls = urls.split("\n");
-    url = urls.pop();
+    urls = urls.split("\n")
+    url= urls[0];
+    console.log("url last:  "+ url.toString());
     //console.log("len: " + urls.length);
     for(i in urls) {
-        //console.log("url: "+ urls[i])
-        //crawl(urls[i])
-    }
-    crawl(url, crawl_movie_info)
+            //console.log("url: "+ urls[i]);
+            //crawl(urls[i]);
+        }
+    //crawl(url,crawl_movie);
+    crawl("http://theater.mtime.com/China_Beijing/", callback);
+}
+
+
+function movies_current_playing(){
+    read_url_and_crawl("mtime.url", crawl_movie_current_playing)
+}
+
+function movie_coming_soon() {
+    read_url_and_crawl("mtime.coming.url", crawl_movie_coming)
 }
 
 function main()
 {
-    movies();
-    //movie_info();
+    movies_current_playing();
+    //movie_coming_soon() ;
 }
 main()
 //phantom.exit()
