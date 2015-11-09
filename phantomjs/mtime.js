@@ -1,18 +1,5 @@
-phantom.onError = function(msg, trace) {
-    var msgStack = ['PHANTOM ERROR: ' + msg];
-    if ( trace.length) {
-        msgStack.push('TRACE:');
-        trace.forEach(function(t) {
-            msgStack.push(' -> ' + (t.file || t.sourceURL) + ': ' + t.line + (t.function ? ' (in function ' + t.function +')' : ''));
-        });
-    }
-    console.error(msgStack.join('\n'));
-    phantom.exit(1);
-};
-
 var page = require('webpage').create();
 
-//page.onResourceRequested = function (req) { console.log(JSON.parse(JSON.stringify(req, undefined, 4)).url); };
 page.onConsoleMessage = function(msg) {
   if((/Unsafe.+/gi).test(msg)){return;}
   console.log(msg);
@@ -20,16 +7,6 @@ page.onConsoleMessage = function(msg) {
 page.settings.loadImages =  false;
 
 page.onResourceRequested = function(requestData, request) {
-  if ((/http:\/\/.+?\.jpg$/gi).test(requestData['url'])) {
-    //console.log('Skipping', requestData['url']);
-    request.abort();
-    return ;
-  }   
-  if ((/http:\/\/.+?\.png$/gi).test(requestData['url'])) {
-    //console.log('Skipping', requestData['url']);
-    request.abort();
-    return ;
-  }   
   if ((/http:\/\/eclick\.baidu\.com\/.+?/gi).test(requestData['url'])) {
     //console.log('Skipping', requestData['url']);
     request.abort();
@@ -88,7 +65,6 @@ page.open('http://theater.mtime.com/China_Shanxi_Province_Xian/', function() {
         }, i);
         console.log("url:  ", url);
     };
-    
     phantom.exit()
   });
 });
