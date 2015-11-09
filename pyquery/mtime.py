@@ -8,6 +8,12 @@ from pyquery  import PyQuery
 
 
 proxy = { "http":"http://10.197.1.52:8080" }
+allcinemabycity = "http://api.m.mtime.cn/OnlineLocationCinema/OnlineCinemasByCity.api?locationId=366"
+cinemabyid="http://api.m.mtime.cn/Showtime/ShowtimeMovieAndDateListByCinema.api?cinemaId=3774"
+cinemaschedule="http://api.m.mtime.cn/Showtime/ShowTimesByCinemaMovieDate.api?cinemaId=3774&movieId=194879&date=2015-11-15"
+cinemadetail="http://api.m.mtime.cn/Cinema/Detail.api?cinemaId=3774"
+showtime = "http://api.m.mtime.cn/Showtime/LocationMovies.api?locationId=366"
+coming = "http://api.m.mtime.cn/Movie/MovieComingNew.api?locationId=366"
 #doc = requests.get(url, headers=headers, proxies=proxy).content.decode("utf-8", "ignore")
 class City():
     def __init__(self, url):
