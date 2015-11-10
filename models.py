@@ -29,7 +29,7 @@ Session = None
 class User(Base):
     __tablename__ = 'user'
     username = Column(String(50), unique=True, nullable=False)
-    password_ = Column('password', String(255), nullable=False)
+    password = Column('password', String(255), nullable=False)
     token = Column(String(50))
     level = Column(Integer, default=1)
 
