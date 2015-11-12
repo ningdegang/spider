@@ -14,107 +14,34 @@ cinemaschedule="http://api.m.mtime.cn/Showtime/ShowTimesByCinemaMovieDate.api?ci
 cinemadetail="http://api.m.mtime.cn/Cinema/Detail.api?cinemaId=3774"
 showtime = "http://api.m.mtime.cn/Showtime/LocationMovies.api?locationId=366"
 coming = "http://api.m.mtime.cn/Movie/MovieComingNew.api?locationId=366"
+moviedetail="http//api.m.mtime.cn/Movie/extendMovieDetail.api?MovieId=225855"
+headers={"X-Mtime-Mobile-PushToken": "3916021343709077051.658892915382386192"}
 #doc = requests.get(url, headers=headers, proxies=proxy).content.decode("utf-8", "ignore")
-class City():
-    def __init__(self, url):
-        self.url = url
-        self.html = PyQuery(requests.get(url=self.url, proxies=proxy).content.decode('utf-8', 'ignore'))
-        self.city = self.html('h2.fl')
-        if len(self.city) > 1:
-            self.city = self.city[1]
-        else:
-            self.city = ''
+class City(object):
+    def __init__(self,id):
+        self.id= id
+        self. data= requests.get(url=self.url, proxies=proxy).content.decode('utf-8', 'ignore')
         self.movie_urls = [a.attr.href for a in self.html("a[href^='http'].pic.__r_c_")]
-        self.movies = []
-        for url in self.movie_urls:
-            try:
-                print url
-                #self.movies.append(Movie(url))
-            except Exception as e:
-                print(url, ':', e)
+        self.playing_movies = []
+        self.coming_movies = []
+        self.cinemas = []
 
 
-class Movie():
-    def __init__(self, url):
-        self.url = url
-        self.html = PyQuery.doc(requests.get(url=self.url, proxies=proxy).content.decode('utf-8', 'ignore'))
-        self.info = MovieInfo( self.html("div.filminfo a"))
-
-        # self.cinemas = []
-        # for c in json.loads(
-        #     re.search(
-        #         r'cinemasJson[^\[]+?(\[[^\n]+\]);',
-        #         self.html,
-        #         re.IGNORECASE,
-        #     ).groups()[0]
-        # ):
-        #     try:
-        #         self.cinemas.append(Cinema(**c))
-        #     except Exception as e:
-        #         print('cinema:', e)
-
-        # self.showtimes = []
-        # for ms in json.loads(
-        #     re.sub(
-        #         r'''new Date\(([^\)]+)\)''',
-        #         r'\1',
-        #         re.search(
-        #             r'showtimesJson[^\[]+?(\[[^\n]+\]);',
-        #             self.html,
-        #             re.IGNORECASE,
-        #         ).groups()[0]
-        #     )
-        # ):
-        #     try:
-        #         self.showtimes.append(MovieShowtime(**ms))
-        #     except Exception as e:
-        #         print('movieshowtime:', e)
-
-
-class MovieInfo():
-    def __init__(self, url):
-        #print(url)
-        self.url = url
-        self.html = requests.get(self.url).content.decode('utf-8', 'ignore')
-        self.title = re.search('<h1[^>]*>([^<]+)</h1', self.html).groups()[0]
-        self.type = re.findall('v:genre">([^<]+)<', self.html)
-        self.release_date = datetime.datetime.strptime(
-            re.search('v:initialReleaseDate[^>]+>([^<]+)<', self.html).groups()[0],
-            '%Y年%m月%d日',
-        )
-        self.release_date = datetime.date(self.release_date.year, self.release_date.month, self.release_date.day)
-
-        match = re.search('v:runtime[^>]+>([^<]+)<', self.html)
-        if match:
-            self.length = match.groups()[0]
-        else:
-            self.length = ''
-
-        self.director = html.unescape(
-            re.search('v:directedBy">([^<]+)<', self.html).groups()[0]
-        )
-        self.actors = [
-            a
-            for i,a in enumerate(re.findall('v:starring">([^<]+)<', self.html))
-            if i%2 == 0
-        ]
-        self.distributor = ''
-        match = re.search('lh18">([^<]+)<', self.html)
-        if match:
-            self.description = match.groups()[0]
-        else:
-            self.description = ''
-            
-        self.scenarist = ''
-        self.poster_url = re.search('src="([^"]+)"[^<]+v:image', self.html).groups()[0]
+class Movie(object):
+    def __init__(self,id):
+        self. id= id
+        self.data= requests.get(url=self.url, proxies=proxy).content.decode('utf-8', 'ignore')
+        self.title = ""
+        self.release_data = ""
+        self.director = ""
+        self.actors = ""
+        self.detributor = ""
+        self.description = ""
+        self.scenarist = ""
+        self.poster_url = ""
 
 
 class Cinema(object):
-    _cinema = {}
-    def __new__(cls, **kwargs):
-        if kwargs['cid'] not in cls._cinema:
-            cls._cinema[kwargs['cid']] = object.__new__(cls)
-        return cls._cinema[kwargs['cid']]
 
     def __init__(self, **kwargs):
         self.name = kwargs['cname']

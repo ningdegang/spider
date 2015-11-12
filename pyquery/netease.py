@@ -20,14 +20,14 @@ def news():
                 a["smallimg"] = n["imgsrc"]
                 a["id"] = n["docid"]
                 a["time"] = n["ptime"]
-                a["smallimgcontent"] = requests.get(a["smallimg"]).content
-                doc =  PyQ(requests.get(a["contenturl"]).content, parser="html")
+                a["smallimgcontent"] = "".join([hex(ord(n))[2:] for n in requests.get(a["smallimg"]).content])
+                doc = PyQ(requests.get(a["contenturl"]).content, parser="html")
                 content = doc("div.content").html()
                 a["content"] = content
             except Exception ,r :
                 print("something failed, reason:%s" % str(r))
                 continue
-            ret.append(a)
+            ret.append(json.dumps(a)+"\n")
         return ret
     except Exception ,r :
         print("something failed, reason:%s" % str(r))
@@ -37,5 +37,7 @@ def main():
     ret = news()
     end = time.time()
     print("cost time: %d, ret: %d" % ((end - begin), len(ret)))
+    with open("netease.txt", "w") as f:
+        f.writelines(ret)
 if __name__ == "__main__":
     main()

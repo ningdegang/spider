@@ -7,6 +7,6 @@ config ={
         "pool_size":10,
         "max_overflow": 20,
         "pool_recycle":600,
-        "echo":1,
+        "echo":0,
     }
 }

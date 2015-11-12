@@ -7,8 +7,6 @@ def main():
     models.init_db()
     session = models.Session()
     users = session.query(models.User)
-    for u in users:
-        print u.username
     user = users.filter_by(username="winning").first()
     user.password = "degang"
     session.flush()

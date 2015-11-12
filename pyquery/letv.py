@@ -22,10 +22,10 @@ def one_page(i):
                 a["url"] = "http://www.letv.com/ptv/vplay/%s.html" % (n["vids"])
                 a["title"] = n["name"]
                 a["language"] = n["lgName"] 
-                a["director"] = n["directory"]
+                a["director"] = json.loads(n["directory"]).values()
                 a["img"] = n["images"]["90*120"]
                 a["description"] = n["description"]
-                a["actors"] = n["starring"]
+                a["actors"] = n["starring"].values()
                 a["duration"] = n["duration"]
                 a["rating"] = n["rating"]
                 a["subCategoryName"] = n["subCategoryName"]
@@ -37,7 +37,7 @@ def one_page(i):
             except Exception ,r :
                 print("something failed, reason:%s" % str(r))
                 continue
-            ret.append(a)
+            ret.append(json.dumps(a)+"\n")
         return ret
     except Exception ,r :
         print("something failed, reason:%s" % str(r))
@@ -51,5 +51,8 @@ def main():
         ret.extend(t)
     end = time.time()
     print("cost time: %d, ret: %d" % ((end - begin), len(ret)))
+    with open("letv.txt", "w") as f:
+        f.writelines(ret)
+        
 if __name__ == "__main__":
     main()
