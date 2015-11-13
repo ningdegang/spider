@@ -5,12 +5,15 @@ from pyquery import PyQuery as PyQ
 import time
 
 proxy = { "http":"http://10.197.1.52:8080" }
-url="http://c.m.163.com/nc/article/list/T1348648517839/0-5.html"
+ent_url="http://c.m.163.com/nc/article/list/T1348648517839/0-5.html"
+movie_url="http://c.m.163.com/nc/article/list/T1348648650048/0-5.html"
+doc_url = "http://c.m.163.com/nc/article/%s/full.html" 
+headers = {"User-Agent":"NTES Android"}
 def news():
     try:
         ret = list()
-        data = requests.get(url=url, proxies=proxy).content.decode('utf-8', 'ignore')
-        data = json.loads(data)["T1348648517839"]
+        data = requests.get(url=movie_url,headers=headers, proxies=proxy).content.decode('utf-8', 'ignore')
+        data = json.loads(data)["T1348648650048"]
         for n in data:
             a = dict()
             try:
@@ -20,10 +23,11 @@ def news():
                 a["smallimg"] = n["imgsrc"]
                 a["id"] = n["docid"]
                 a["time"] = n["ptime"]
-                a["smallimgcontent"] = "".join([hex(ord(n))[2:] for n in requests.get(a["smallimg"]).content])
-                doc = PyQ(requests.get(a["contenturl"]).content, parser="html")
-                content = doc("div.content").html()
-                a["content"] = content
+                #a["smallimgcontent"] = "".join([hex(ord(n))[2:] for n in requests.get(a["smallimg"]).content])
+                real_url = doc_url % a["id"]
+                doc = json.loads(requests.get(real_url).content)[a["id"]]
+                a["content"] = doc["body"]
+                a["contentimgs"] = [{"src":t["src"], "title":t["alt"]} for t in doc["img"]]
             except Exception ,r :
                 print("something failed, reason:%s" % str(r))
                 continue

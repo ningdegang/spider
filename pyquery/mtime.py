@@ -14,7 +14,9 @@ cinemaschedule="http://api.m.mtime.cn/Showtime/ShowTimesByCinemaMovieDate.api?ci
 cinemadetail="http://api.m.mtime.cn/Cinema/Detail.api?cinemaId=3774"
 showtime = "http://api.m.mtime.cn/Showtime/LocationMovies.api?locationId=366"
 coming = "http://api.m.mtime.cn/Movie/MovieComingNew.api?locationId=366"
-moviedetail="http//api.m.mtime.cn/Movie/extendMovieDetail.api?MovieId=225855"
+moviecomments="http://api.m.mtime.cn/Movie/HotLongComments.api?movieId=194879"
+movie_tickets = "http://piao.mtime.com/onlineticket/3774_147115393/seat/"
+movie_tickets = "http://api.m.mtime.cn/Showtime/OnlineSeatsByShowTimeID.api?dId=147130820"
 headers={"X-Mtime-Mobile-PushToken": "3916021343709077051.658892915382386192"}
 #doc = requests.get(url, headers=headers, proxies=proxy).content.decode("utf-8", "ignore")
 class City(object):
