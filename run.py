@@ -11,10 +11,11 @@ def main():
     user.password = "degang"
     session.flush()
     session.commit()
-    
-
-
-
+    asdf
+    shit
+    asdfas
+    henahao 
+    asdfasdf
 
 if __name__ == "__main__":
     main()
