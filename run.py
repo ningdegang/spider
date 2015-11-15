@@ -11,6 +11,10 @@ def main():
     user.password = "degang"
     session.flush()
     session.commit()
+    
+
+
+
 
 if __name__ == "__main__":
     main()
