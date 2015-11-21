@@ -42,9 +42,6 @@ class Cinema(Base):
     description = Column(String(255))
     score = Column(Integer, default=100)
 
-    def get_distance(self):
-        raise NotImplementedError()
-
 
 
 
@@ -64,6 +61,23 @@ class Movie(Base):
     score = Column(Integer, default=100)
     status = Column(Integer, default=1)
 
+class OnLineMovies(Base):
+    __tablename__ = "onlinemovies"
+    url = Column(String(50))
+    title = Column(String(20))
+    language =  Column(String(10)) 
+    director = Column(String(20))
+    img = Column(String(100))
+    description = Column(String(500)) 
+    actors = Column(String(50))
+    rating = Column(Integer, default=80)
+    subCategoryName = Column(String(20))
+    releaseDate = Column(Integer, default=0)    
+    ctime = Column(Integer, default=0) 
+    area = Column(String(10))
+    tag = Column(String(50))
+    subname = Column(String(20))
+         
 
 
 class EntertainmentNews(Base):
@@ -72,6 +86,8 @@ class EntertainmentNews(Base):
     title = Column(String(100), nullable=False)
     content = Column(String(255), nullable=False)
     photo = Column(String(33*9))
+    digest = Column(String(100), nullable=False)
+    time = Column(String(20), nullable=False)
 
 def init_db():
     engine = create_engine(
@@ -89,5 +105,5 @@ def init_db():
 
 if __name__ == "__main__":
     engine = init_db()
+    Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
-    #Base.metadata.drop_all(engine)
