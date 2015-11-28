@@ -35,6 +35,26 @@ def update_letv():
             session.add(movie)
             session.commit()
 
+def update_netease():
+    models.init_db()
+    session = models.Session()
+    news= session.query(models.EntertainmentNews)
+    ret = netease.news()
+    for one in ret:
+        one = json.loads(one)
+        new = news.filter_by(digest=one["digest"]).first()
+        if not new:
+            new = models.EntertainmentNews()    
+            new.title = one["title"]
+            new.content = one["content"]
+            new.photo = one["smallimg"]
+            new.digest = one["digest"]
+            new.time = one["time"]
+            session.add(new)
+            session.commit()
+
+
 if __name__ == "__main__":
-    update_letv()
+    #update_letv()
+    update_netease()
     #main()

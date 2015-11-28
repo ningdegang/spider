@@ -31,6 +31,7 @@ def news():
                 #a["content"] = doc["body"]
                 #a["contentimgs"] = [{"src":t["src"], "title":t["alt"]} for t in doc["img"]]
             except Exception as e :
+                print n
                 print("something failed, reason: %s" % (e.message))
                 continue
             ret.append(json.dumps(a)+"\n")
