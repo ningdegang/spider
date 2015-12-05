@@ -12,6 +12,7 @@ from sqlalchemy.orm import sessionmaker, relationship, backref
 from sqlalchemy import String, Integer, DateTime, TIMESTAMP, BigInteger, Float
 
 from config import config
+from pymongo import MongoClient
 
 class Query():
     def __get__(self, instance, owner):
@@ -103,7 +104,25 @@ def init_db():
     Session = sessionmaker(bind=engine)
     return engine
 
+class MC():
+    def __init__(self, host="127.0.0.1", port=27017):
+        self.conn = MongoClient(host=host, port=port)
+    def db(self,db):
+        self.cur_db = self.conn[db]
+        return self.cur_db
+    def collection(self, c):
+        self.cur_collection = self.cur_db[c]
+        return self.cur_collection
+    def save(self, doc):
+        self.cur_collection.save(doc)
+    def close(self):
+        self.conn.close()
+    
+
 if __name__ == "__main__":
     engine = init_db()
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
+    client = MC()
+    client.use_db("test")
+    client.use_collection("movies")

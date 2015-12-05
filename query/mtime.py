@@ -8,14 +8,14 @@ import requests
 
 proxy = { "http":"http://10.197.1.52:8080" }
 allcinemabycity = "http://api.m.mtime.cn/OnlineLocationCinema/OnlineCinemasByCity.api?locationId=%d"
-cinemabyid="http://api.m.mtime.cn/Showtime/ShowtimeMovieAndDateListByCinema.api?cinemaId=3774"
-cinemaschedule="http://api.m.mtime.cn/Showtime/ShowTimesByCinemaMovieDate.api?cinemaId=3774&movieId=194879&date=2015-11-15"
+cinemashowinfobyid="http://api.m.mtime.cn/Showtime/ShowtimeMovieAndDateListByCinema.api?cinemaId=%d"
+cinemaschedule="http://api.m.mtime.cn/Showtime/ShowTimesByCinemaMovieDate.api?cinemaId=%d&movieId=%d&date=%s"
 cinemadetail="http://api.m.mtime.cn/Cinema/Detail.api?cinemaId=3774"
 showtime = "http://api.m.mtime.cn/Showtime/LocationMovies.api?locationId=%d"
 coming = "http://api.m.mtime.cn/Movie/MovieComingNew.api?locationId=%d"
 moviecomments="http://api.m.mtime.cn/Movie/HotLongComments.api?movieId=194879"
-movie_tickets = "http://piao.mtime.com/onlineticket/3774_147115393/seat/"
-movie_tickets = "http://api.m.mtime.cn/Showtime/OnlineSeatsByShowTimeID.api?dId=147130820"
+movie_tickets = "http://piao.mtime.com/onlineticket/%d_%d/seat/"
+#movie_tickets = "http://api.m.mtime.cn/Showtime/OnlineSeatsByShowTimeID.api?dId=147130820"
 header= {"User-Agent": "Mozilla/5.0  AppleWebKit/537.36 (KHTML, like Gecko) Safari/537.36"}
 
 id2name = {366:u"\u6df1\u5733"}
@@ -33,10 +33,14 @@ def get_all_cinema_by_city(cid):
         ret["address"] = mtime.get("address")
         ret["cid"] = mtime.get("cinemaId")
         ret["city"] = id2name.get(cid)
+        ret["cityid"] = cid
         ret["description"] = get_feature(mtime.get("feature"))
         ret["score"] = int(mtime.get("ratingFinal")*10)
         ret["longitude"] = mtime.get("longitude")
         ret["latitude"] = mtime.get("latitude")
+        url = cinemashowinfobyid % ret["cid"]
+        tmp = json.loads(requests.get(url=url, headers=header).content.decode('utf-8', 'ignore'))
+        ret["showinfo"] = tmp["movies"]
         return ret
     ret = map(mtime_cinema_to_local, data)
     ret = map(lambda x:json.dumps(x)+"\n", ret)
@@ -45,6 +49,7 @@ def get_all_cinema_by_city(cid):
 def mtime_showtime_movie_to_local(mtime):
     ret = dict()
     ret["title"] = mtime.get("t")
+    ret["mid"] = mtime.get("id")
     ret["type"] = mtime.get("movieType")
     ret["release_date"] = mtime.get("rd")
     ret["length"] = mtime.get("d")
@@ -52,12 +57,13 @@ def mtime_showtime_movie_to_local(mtime):
     ret["actors"] = mtime.get("aN1") + " " + mtime.get("aN2")
     ret["description"] = mtime.get("commonSpecial")
     ret["poster"] = mtime.get("img")
-    ret["score"] = int(mtime.get("r")*10)
+    ret["score"] = int((mtime.get("r") and mtime["r"] >=0 or 6 )*10)
     return ret
 
 def mtime_coming_movie_to_local(mtime):
     ret = dict()
     ret["title"] = mtime.get("title")
+    ret["mid"] = mtime.get("id")
     ret["type"] = mtime.get("type")
     ret["release_date"] = mtime.get("releaseDate")
     ret["director"] = mtime.get("director")
@@ -78,10 +84,35 @@ def get_all_movie_by_city_and_status(url, cid, status, func):
     ret = map(lambda x:json.dumps(x)+"\n", ret)
     return ret
 
+def get_showtime_movies_by_city(cid):
+    return get_all_movie_by_city_and_status(showtime,cid, 1, mtime_showtime_movie_to_local) 
+
+def get_coming_movies_by_city(cid):
+    return get_all_movie_by_city_and_status(coming, cid, 2, mtime_coming_movie_to_local)
+
+def get_cinema_movie_schedule(cid, mid, dt):
+    url = cinemaschedule % (cid, mid, dt)
+    print url
+    data= json.loads(requests.get(url=url, headers=header).content.decode('utf-8', 'ignore'))
+    data = data["s"]
+    def formatdata(it):
+        print it
+        if it.get("provider"):
+            it["ticketurl"] = movie_tickets % (cid, it["provider"][0]["dId"])
+        del(it["provider"])
+        return it
+    data = map(formatdata, data)
+    ret = {"cid":cid, "mid":mid, "dt":dt}
+    ret["s"] = data
+    return json.dumps(ret)
+    
+
 if __name__ == '__main__':
     #ret = get_all_cinema_by_city(366)
     #for c in ret: print c
-    #ret = get_all_movie_by_city_and_status(coming,366, 1, mtime_showtime_movie_to_local)
+    #ret = get_showtime_movies_by_city(366)
     #for c in ret: print c
-    ret = get_all_movie_by_city_and_status(coming,366, 2, mtime_coming_movie_to_local)
-    for c in ret: print c
+    #ret = get_coming_movies_by_city(366)
+    #for c in ret: print c
+    print get_cinema_movie_schedule(1900, 219145, "12-05")
+    
