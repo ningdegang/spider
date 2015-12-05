@@ -81,13 +81,13 @@ class OnLineMovies(Base):
 
 
 class EntertainmentNews(Base):
-    '娱乐八卦'
+    u'娱乐八卦'
     __tablename__ = 'entertainmentnews'
     title = Column(String(100), nullable=False)
     content = Column(String(255), nullable=False)
     photo = Column(String(33*9))
-    digest = Column(String(100), nullable=False)
-    time = Column(String(20), nullable=False)
+    time = Column(DateTime())
+    digest = Column(String(255))
 
 def init_db():
     engine = create_engine(

@@ -11,7 +11,7 @@ def update_letv():
     models.init_db()
     session = models.Session()
     movies = session.query(models.OnLineMovies)
-    ret = letv.one_page(1)
+    ret = letv.get_all()
     for one in ret:
         one = json.loads(one)
         movie = movies.filter_by(title=one["title"]).first()
@@ -39,7 +39,7 @@ def update_netease():
     models.init_db()
     session = models.Session()
     news= session.query(models.EntertainmentNews)
-    ret = netease.news()
+    ret = netease.news(90)
     for one in ret:
         one = json.loads(one)
         new = news.filter_by(digest=one["digest"]).first()
@@ -55,6 +55,6 @@ def update_netease():
 
 
 if __name__ == "__main__":
-    #update_letv()
+    update_letv()
     update_netease()
     #main()

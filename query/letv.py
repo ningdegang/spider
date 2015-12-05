@@ -6,6 +6,7 @@ import time
 
 #proxy = { "http":"http://10.197.1.52:8080" }
 url="http://list.letv.com/apin/chandata.json?c=1&d=1&md=&o=4&p=%d&s=1"
+url="http://list.letv.com/apin/chandata.json?c=1&d=1&md=&o=9&p=%d&s=1&ph=1"
 def one_page(i):
     one = url % i
     try:
@@ -15,7 +16,7 @@ def one_page(i):
         data = json.loads(data)
         data =  data["data_list"]
         for n in data:
-            if n["category"] != "1" and n["categoryName"] != u'\u7535\u5f71':continue;
+            if n["category"] != "1" and n["categoryName"] != '\u7535\u5f71':continue;
             a = dict()
             try:
                 vids = n["vids"].split(",")
@@ -46,7 +47,7 @@ def one_page(i):
 
 def get_all():
     ret = list()
-    for i in xrange(1,20):
+    for i in xrange(1,24):
         t = one_page(i)
         if len(t) == 0: continue
         ret.extend(t)
