@@ -18,7 +18,7 @@ movie_tickets = "http://piao.mtime.com/onlineticket/%d_%d/seat/"
 #movie_tickets = "http://api.m.mtime.cn/Showtime/OnlineSeatsByShowTimeID.api?dId=147130820"
 header= {"User-Agent": "Mozilla/5.0  AppleWebKit/537.36 (KHTML, like Gecko) Safari/537.36"}
 
-id2name = {366:u"\u6df1\u5733"}
+id2name={366:u"深圳", 290:u"北京",292:u"上海",365:u"广州",974:u"杭州"}
 def get_feature(feature):
     ret = filter(lambda x: feature.get(x), feature.keys()) or list()
     ret = map(lambda x : x.replace("has", ""), ret)
@@ -36,8 +36,7 @@ def get_all_cinema_by_city(cid):
         ret["cityid"] = cid
         ret["description"] = get_feature(mtime.get("feature"))
         ret["score"] = int(mtime.get("ratingFinal")*10)
-        ret["longitude"] = mtime.get("longitude")
-        ret["latitude"] = mtime.get("latitude")
+        ret["location"] = [mtime.get("longitude"), mtime.get("latitude")]
         url = cinemashowinfobyid % ret["cid"]
         tmp = json.loads(requests.get(url=url, headers=header).content.decode('utf-8', 'ignore'))
         ret["showinfo"] = tmp["movies"]
@@ -108,11 +107,11 @@ def get_cinema_movie_schedule(cid, mid, dt):
     
 
 if __name__ == '__main__':
-    #ret = get_all_cinema_by_city(366)
-    #for c in ret: print c
+    ret = get_all_cinema_by_city(366)
+    for c in ret: print c
     #ret = get_showtime_movies_by_city(366)
     #for c in ret: print c
     #ret = get_coming_movies_by_city(366)
     #for c in ret: print c
-    print get_cinema_movie_schedule(1900, 219145, "12-05")
+    #print get_cinema_movie_schedule(1900, 219145, "12-05")
     

@@ -16,6 +16,7 @@ def factory_get(db, collection):
             for it in ret: 
                 it = json.loads(it)
                 mc.save(it)
+            if collection == "cinema": c.create_index({"location":'2dsphere'})
             mc.close()
             return ret
         return _deco
@@ -39,7 +40,7 @@ def get_all_coming_movie():
         ret = mtime.get_coming_movies_by_city(key)
     return ret
 
-#@factory_get("test", "movie_schedule")
+@factory_get("test", "movie_schedule")
 def get_all_movie_schedule():
     ret = list()
     mc = models.MC()  
@@ -58,7 +59,7 @@ def get_all_movie_schedule():
     
     
 if __name__ == "__main__":
-    #get_all_cinema()
+    get_all_cinema()
     #get_all_showtime_movie()
     #get_all_coming_movie()
-    print get_all_movie_schedule()
+    #print get_all_movie_schedule()
