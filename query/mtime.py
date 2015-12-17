@@ -37,7 +37,7 @@ def get_all_cinema_by_city(cid):
         ret["cityid"] = cid
         ret["description"] = get_feature(mtime.get("feature"))
         ret["score"] = int(mtime.get("ratingFinal")*10)
-        ret["location"] =  { "type" : "Point", "coordinates" : [mtime.get("longitude"), mtime.get("latitude")]}
+        ret["location"] =  { "type" : "Point", "coordinates" : [mtime.get("latitude"),mtime.get("longitude")]}
         url = cinemashowinfobyid % ret["cid"]
         tmp = json.loads(requests.get(url=url, headers=header).content.decode('utf-8', 'ignore'))
         ret["showinfo"] = tmp["movies"]
@@ -51,7 +51,7 @@ def mtime_showtime_movie_to_local(mtime):
     ret["title"] = mtime.get("t")
     ret["mid"] = mtime.get("id")
     ret["type"] = mtime.get("movieType")
-    ret["release_date"] = mtime.get("rd")
+    ret["release_date"] = mtime.get("rd") and datetime.datetime.strptime(mtime.get("rd"), "%Y%m%d").strftime("%Y-%m-%d") or u"未知"
     ret["length"] = mtime.get("d")
     ret["director"] = mtime.get("dN")
     ret["actors"] = mtime.get("aN1") + " " + mtime.get("aN2")
@@ -62,7 +62,6 @@ def mtime_showtime_movie_to_local(mtime):
     ret["description"] = p
     ret["poster"] = mtime.get("img")
     ret["score"] = int((mtime.get("r") and mtime["r"] >=0 or 6 )*10)
-    print ret.keys()
     return ret
 
 def mtime_coming_movie_to_local(mtime):
@@ -84,7 +83,6 @@ def mtime_coming_movie_to_local(mtime):
     p = doc("div.otherbox.__r_c_ span")
     p = p and p[0].text or u"暂无详细"
     ret["length"] = p
-    print ret.keys()
     return ret
 
 
@@ -126,8 +124,8 @@ def get_cinema_movie_schedule(cid, mid, dt):
 if __name__ == '__main__':
     #ret = get_all_cinema_by_city(366)
     #for c in ret: print c
-    #ret = get_showtime_movies_by_city(366)
-    #for c in ret: print c; break
+    ret = get_showtime_movies_by_city(366)
+    for c in ret: print c; break
     ret = get_coming_movies_by_city(366)
     for c in ret: print c; break
     #print get_cinema_movie_schedule(1900, 219145, "12-05")
