@@ -19,7 +19,10 @@ movie_tickets = "http://piao.mtime.com/onlineticket/%d_%d/seat/"
 #movie_tickets = "http://api.m.mtime.cn/Showtime/OnlineSeatsByShowTimeID.api?dId=147130820"
 header= {"User-Agent": "Mozilla/5.0  AppleWebKit/537.36 (KHTML, like Gecko) Safari/537.36"}
 
-id2name={366:u"深圳", 290:u"北京",292:u"上海",365:u"广州",974:u"杭州"}
+#id2name={366:u"深圳", 290:u"北京",292:u"上海",365:u"广州",974:u"杭州"}
+id2name={366:u"深圳", 290:u"北京",292:u"上海",365:u"广州",974:u"杭州",291:u"重庆",
+            347:u"兰州",561:u"武汉",293:u"天津",722:u"沈阳",791:u"西安",489:u"郑州",
+             368:u"珠海",598:u"长沙",323:u"厦门"}
 def get_feature(feature):
     ret = filter(lambda x: feature.get(x), feature.keys()) or list()
     ret = map(lambda x : x.replace("has", ""), ret)
